@@ -1,0 +1,19 @@
+{
+  "name": "minihttp",
+  "version": "0.0.1",
+  "description": "A mini and light http server for small projects",
+  "main": "minihttp.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mfoschian/minihttp.git"
+  },
+  "keywords": [
+    "http",
+    "server"
+  ],
+  "author": "mfx",
+  "license": "GPL v3"
+}
