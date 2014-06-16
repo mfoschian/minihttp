@@ -6,6 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+    "formidable": "1.0.x"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/mfoschian/minihttp.git"
@@ -15,5 +18,8 @@
     "server"
   ],
   "author": "mfx",
-  "license": "GPL v3"
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "gitHead": "7b4d041602368431532d0e9defebbaa88accc284",
+  "devDependencies": {}
 }

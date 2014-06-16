@@ -388,4 +388,7 @@ function HttpServer( args )
 	};
 };
 
-exports.HttpServer = HttpServer;
+module.exports = 
+{
+	HttpServer: HttpServer
+};
