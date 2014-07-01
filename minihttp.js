@@ -218,7 +218,7 @@ function HttpServer( args )
 		if( this.config.uploadDirAbs )
 			form.uploadDir = this.config.uploadDirAbs;
 		else
-			form.uploadDir = fsPath.resolve(this.config.wwwroot, this.config.webHome + '/' + this.config.uploadDir);
+			form.uploadDir = fsPath.resolve( fsPath.join(this.config.wwwroot, this.config.webHome, this.config.uploadDir) );
 
 		form.on('field', function(field, value)
 		{
@@ -291,7 +291,7 @@ function HttpServer( args )
 
 	this.resolvePath = function( path )
 	{
-		var fileName = fsPath.resolve(this.config.wwwroot, this.config.webHome + '/' + path);
+		var fileName = fsPath.resolve( fsPath.join(this.config.wwwroot, this.config.webHome, path) );
 		return fileName;
 	};
 
@@ -327,7 +327,7 @@ function HttpServer( args )
 	this.serveFile = function(pathname, req, response, headers)
 	{
 		if( pathname == "/favicon.ico" && this.config.favicon )
-			pathname = '/'+ this.config.favicon;
+			pathname = fsPath.join('/',this.config.favicon);
 		else
 			pathname = decodeURI(pathname);
 

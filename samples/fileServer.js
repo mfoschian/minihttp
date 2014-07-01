@@ -1,11 +1,5 @@
 var minihttp = require('../minihttp');
 var util = require('util');
-//var fsPath = require("path");
-
-console.log( util.inspect(process.argv) );
-//var APP_DIRNAME = fsPath.dirname(require.main.filename);
-//console.log( APP_DIRNAME );
-//console.log( util.inspect(require.main) );
 
 var options =
 {
