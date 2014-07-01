@@ -9,6 +9,7 @@ var formidable = require('formidable');
 
 var DEF_HTTP_PORT = 80;
 
+var APP_DIRNAME = fsPath.dirname(require.main.filename);
 
 //----- UTILS {
 function generateToken(pattern){
@@ -57,7 +58,8 @@ function HttpServer( args )
 		defaultPage: '/index.html',
 		favicon: 'favicon.ico',
 		uploadDir:  'upload',
-		port: DEF_HTTP_PORT
+		port: DEF_HTTP_PORT,
+		wwwroot: APP_DIRNAME
 	};
 
 	merge( this.config, args );
@@ -89,20 +91,29 @@ function HttpServer( args )
 		else
 			methods = callback;
 
-		var u = url.parse( path );
-		
+		var rex = null;
 		var ids = [];
-		var r = new RegExp('{([^\/}]+)}','gi');
-			
-		var rpath = u.pathname.replace( r, function( match, p1 )
+		
+		if( typeof(path.test) == 'function' )
 		{
-			ids.push( p1 );
-			return '([^\/]+)';
-		});
-		
-		var rex = new RegExp( '^'+rpath+'$' );
+			// regexp passed !
+			rex = path;
+		}
+		else
+		{
+			var u = url.parse( path );
+			var r = new RegExp('{([^\/}]+)}','gi');
+
+			var rpath = u.pathname.replace( r, function( match, p1 )
+			{
+				ids.push( p1 );
+				return '([^\/]+)';
+			});
+			
+			rex = new RegExp( '^'+rpath+'$' );
+		}
+
 		this.routes.push( { exp: rex, ids: ids, methods: methods } );
-		
 		return this;
 	};
 	this.get_route = function( path )
@@ -174,6 +185,8 @@ function HttpServer( args )
 			h[i] = headers[i];
 		}
 		res.writeHead(200, h);
+		if( typeof(json) != 'string' )
+			json = JSON.stringify(json);
 		res.end(json);
 	};
 
@@ -202,7 +215,11 @@ function HttpServer( args )
 		var tmpFiles = [];
 		var form = new formidable.IncomingForm();
 
-		form.uploadDir = fsPath.resolve(__dirname, this.config.webHome + '/' + this.config.uploadDir);
+		if( this.config.uploadDirAbs )
+			form.uploadDir = this.config.uploadDirAbs;
+		else
+			form.uploadDir = fsPath.resolve(this.config.wwwroot, this.config.webHome + '/' + this.config.uploadDir);
+
 		form.on('field', function(field, value)
 		{
 			fields[field] = value;
@@ -215,7 +232,7 @@ function HttpServer( args )
 			}
 			else
 			{
-				console.log( util.inspect(file) );
+				//console.log( util.inspect(file) );
 				files.push(file);
 			}
 		})
@@ -274,7 +291,7 @@ function HttpServer( args )
 
 	this.resolvePath = function( path )
 	{
-		var fileName = fsPath.resolve(__dirname, this.config.webHome + '/' + path);
+		var fileName = fsPath.resolve(this.config.wwwroot, this.config.webHome + '/' + path);
 		return fileName;
 	};
 
@@ -314,7 +331,8 @@ function HttpServer( args )
 		else
 			pathname = decodeURI(pathname);
 
-		var fileName = fsPath.resolve(__dirname, this.config.webHome + pathname);
+		var fileName = fsPath.resolve( fsPath.join(this.config.wwwroot, this.config.webHome, pathname) );
+		//console.log('- serving '+fileName );
 		this.sendFile( fileName, req, response, headers );
 	}
 
@@ -353,11 +371,11 @@ function HttpServer( args )
 				{
 					// TODO: choose a better error management
 					var mime = {"Content-Type": me.mimeType('html')};
-					console.log( 'ERROR : ' + err);
+					console.log( 'ERROR : No routing defined');
 					response.writeHead(505);
 					return;
 				}
-				if( method == 'post' )
+				if( method == 'post' || method == 'put' )
 				{
 					me.parse_post_parms( request, function( err, fields, files )
 					{
