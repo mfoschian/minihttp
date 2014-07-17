@@ -393,6 +393,8 @@ function HttpServer( args )
 			}
 
 			// No route found: serve file
+			if( pathname == '/' && me.config.defaultPage )
+				pathname = me.config.defaultPage;
 			me.serveFile(pathname, req, response);
 			
 		}
