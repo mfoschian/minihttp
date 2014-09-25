@@ -66,6 +66,7 @@ function HttpServer( args )
 	
 	this.parsers = {};
 	this.routes = [];
+	this.http = null;
 		
 	this.callbacks = {};
 	this.on = function( name, callback )
@@ -400,7 +401,7 @@ function HttpServer( args )
 		}
 
 		var listen_port = this.config.port || DEF_HTTP_PORT;
-		http.createServer(onRequest).listen(listen_port);
+		this.http = http.createServer(onRequest).listen(listen_port);
 
 		console.log("Server has started on port "+listen_port+".");
 		
