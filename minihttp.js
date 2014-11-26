@@ -143,6 +143,7 @@ function HttpServer( args )
 				return r;
 			}
 		}
+		//console.log( 'no route found' );
 		return null;
 	};
 		
@@ -191,6 +192,20 @@ function HttpServer( args )
 		res.end(json);
 	};
 
+	this.sendHTML = function( response, html )
+	{
+		var h = {"Content-Type": this.mimeType('html')};
+		response.writeHead(200, h);
+		response.write( html );
+		response.end();
+	};
+	
+	this.sendHTMLbody = function( response, html )
+	{
+		var h = '<html><body>'+html+'</body></html>';
+		this.sendHTML( response, h );
+	}
+	
 	this.sendErrorResponse = function( res, err, headers )
 	{
 		this.sendJSON( res, this.JsonERR(err), headers );
@@ -330,7 +345,16 @@ function HttpServer( args )
 		if( pathname == "/favicon.ico" && this.config.favicon )
 			pathname = fsPath.join('/',this.config.favicon);
 		else
-			pathname = decodeURI(pathname);
+		{
+			try
+			{
+				pathname = decodeURI(pathname);
+			}
+			catch(e)
+			{
+				this.sendErrorResponse( response, e )
+			}
+		}
 
 		var fileName = fsPath.resolve( fsPath.join(this.config.wwwroot, this.config.webHome, pathname) );
 		//console.log('- serving '+fileName );
@@ -371,9 +395,12 @@ function HttpServer( args )
 				if( !callback )
 				{
 					// TODO: choose a better error management
+					// TODO: choose a better error management			
 					var mime = {"Content-Type": me.mimeType('html')};
 					console.log( 'ERROR : No routing defined');
-					response.writeHead(505);
+					response.writeHead(500);
+					response.write( '<html><body><h1>Invalid Path</h1></body></html>' );
+					response.end();
 					return;
 				}
 				if( method == 'post' || method == 'put' )
