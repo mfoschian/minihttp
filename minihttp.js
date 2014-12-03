@@ -192,9 +192,13 @@ function HttpServer( args )
 		res.end(json);
 	};
 
-	this.sendHTML = function( response, html )
+	this.sendHTML = function( response, html, headers )
 	{
 		var h = {"Content-Type": this.mimeType('html')};
+		for( var i in headers )
+		{
+			h[i] = headers[i];
+		}
 		response.writeHead(200, h);
 		response.write( html );
 		response.end();
