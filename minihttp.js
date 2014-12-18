@@ -242,7 +242,42 @@ function HttpServer( args )
 
 		form.on('field', function(field, value)
 		{
-			fields[field] = value;
+			if( !field ) return;
+			var regEx = /\[([^\]]+)\]/g;
+			var match = regEx.exec(field);
+			if( match )
+			{
+				var str = field;
+				field = str.substr(0,match.index);
+				var arr = fields[field];
+				if( !arr )
+				{
+					arr = [];
+					fields[field] = arr;
+				}
+				var index = match[1];
+				
+				match = regEx.exec(str);
+				while( match ) 
+				{
+					var a = arr[index];
+					if( !a )
+					{
+						a = [];
+						arr[index] = a;
+					}
+					arr = arr[index];
+
+					index = match[1];
+					match = regEx.exec(str);
+				}
+
+				arr[index] = value;
+			}
+			else
+			{
+				fields[field] = value;
+			}
 		})
 		.on('file', function(field, file)
 		{
