@@ -59,7 +59,23 @@ function HttpServer( args )
 		favicon: 'favicon.ico',
 		uploadDir:  'upload',
 		port: DEF_HTTP_PORT,
-		wwwroot: APP_DIRNAME
+		wwwroot: APP_DIRNAME,
+		mimeTypes :
+		{
+			_default: 'text/plain'
+			,txt: 'text/plain'
+			,js: 'application/javascript'
+			,html: 'text/html'
+			,css : 'text/css'
+			,gif: 'image/gif'
+			,jpg: 'image/jpeg'
+			,png: 'image/png'
+			,ico: 'image/x-icon'
+			,json: 'application/json'
+			,ogg: 'application/ogg'
+			,mp3: 'audio/mpeg'
+			,vnc: 'application/x-vnc'
+		}		
 	};
 
 	merge( this.config, args );
@@ -147,24 +163,11 @@ function HttpServer( args )
 		return null;
 	};
 		
-	this.mimeTypes =
-	{
-		js: 'application/javascript',
-		html: 'text/html',
-		css : 'text/css',
-		gif: 'image/gif',
-		jpg: 'image/jpeg',
-		png: 'image/png',
-		ico: 'image/x-icon',
-		json: 'application/json',
-		ogg: 'application/ogg',
-		mp3: 'audio/mpeg',
-		txt: 'text/plain'
-	};
+
 	
 	this.mimeType =  function (s)
 	{
-		return this.mimeTypes[ s || 'txt' ];
+		return this.config.mimeTypes[ s || '_default' ];
 	}
 
 	var me = this;
