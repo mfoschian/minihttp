@@ -58,6 +58,7 @@ function HttpServer( args )
 		defaultPage: '/index.html',
 		favicon: 'favicon.ico',
 		uploadDir:  'upload',
+		debug: 0,
 		port: DEF_HTTP_PORT,
 		wwwroot: APP_DIRNAME,
 		mimeTypes :
@@ -135,7 +136,7 @@ function HttpServer( args )
 	};
 	this.get_route = function( path )
 	{
-		console.log('checking route for ['+path+']');
+		if( this.config.debug > 0 ) console.log('checking route for ['+path+']');
 
 		for( var i in this.routes )
 		{
@@ -417,7 +418,7 @@ function HttpServer( args )
 			var pathname = req.pathname;
 			var method = request.method.toLowerCase();
 			
-			console.log(method + " " + pathname);
+			if( this.config.debug > 0 ) console.log(method + " " + pathname);
 			//console.log(req);
 
 			var pre = me.callbacks['preliminary'];
