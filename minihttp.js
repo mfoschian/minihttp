@@ -418,7 +418,7 @@ function HttpServer( args )
 			var pathname = req.pathname;
 			var method = request.method.toLowerCase();
 			
-			if( this.config.debug > 0 ) console.log(method + " " + pathname);
+			if( me.config.debug > 0 ) console.log(method + " " + pathname);
 			//console.log(req);
 
 			var pre = me.callbacks['preliminary'];
