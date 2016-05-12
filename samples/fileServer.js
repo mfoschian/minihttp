@@ -22,5 +22,9 @@ Server.route('/', function( request, response, parms )
 	Server.sendResponse( response, Server );
 });
 
-Server.listen();
+Server.route('/crash', function( request, response, parms )
+{
+	throw new Error( 'Crash!' );
+});
 
+Server.listen();

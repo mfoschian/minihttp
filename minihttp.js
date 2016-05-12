@@ -414,60 +414,70 @@ function HttpServer( args )
 	{
 		function onRequest(request, response) 
 		{
-			var req = url.parse(request.url,true);
-			var pathname = req.pathname;
-			var method = request.method.toLowerCase();
-			
-			if( me.config.debug > 0 ) console.log(method + " " + pathname);
-			//console.log(req);
-
-			var pre = me.callbacks['preliminary'];
-			if( pre )
+			try
 			{
-				var go_on = pre( request, response );
-				if( !go_on )
-					return;
-			}
-			
+				var req = url.parse(request.url,true);
+				var pathname = req.pathname;
+				var method = request.method.toLowerCase();
+				
+				if( me.config.debug > 0 ) console.log(method + " " + pathname);
+				//console.log(req);
 
-			// make path routing
-			var route = me.get_route( pathname );
-			if( route )
-			{
-				var callback = route.methods[ method];
-				if( !callback )
+				var pre = me.callbacks['preliminary'];
+				if( pre )
 				{
-					// TODO: choose a better error management
-					// TODO: choose a better error management			
-					var mime = {"Content-Type": me.mimeType('html')};
-					console.log( 'ERROR : No routing defined');
-					response.writeHead(500);
-					response.write( '<html><body><h1>Invalid Path</h1></body></html>' );
-					response.end();
-					return;
-				}
-				if( method == 'post' || method == 'put' )
-				{
-					me.parse_post_parms( request, function( err, fields, files )
-					{
-						var parms = { ids: route.ids, fields: fields, files: files };
-						callback(request, response, parms) ;
-					});
-				}
-				else
-				{
-					var parms = { ids: route.ids, fields: req.query };
-					callback(request, response, parms);
+					var go_on = pre( request, response );
+					if( !go_on )
+						return;
 				}
 				
-				return;
-			}
 
-			// No route found: serve file
-			if( pathname == '/' && me.config.defaultPage )
-				pathname = me.config.defaultPage;
-			me.serveFile(pathname, req, response);
-			
+				// make path routing
+				var route = me.get_route( pathname );
+				if( route )
+				{
+					var callback = route.methods[ method];
+					if( !callback )
+					{
+						// TODO: choose a better error management
+						// TODO: choose a better error management			
+						var mime = {"Content-Type": me.mimeType('html')};
+						console.log( 'ERROR : No routing defined');
+						response.writeHead(500);
+						response.write( '<html><body><h1>Invalid Path</h1></body></html>' );
+						response.end();
+						return;
+					}
+					if( method == 'post' || method == 'put' )
+					{
+						me.parse_post_parms( request, function( err, fields, files )
+						{
+							var parms = { ids: route.ids, fields: fields, files: files };
+							callback(request, response, parms) ;
+						});
+					}
+					else
+					{
+						var parms = { ids: route.ids, fields: req.query };
+						callback(request, response, parms);
+					}
+					
+					return;
+				}
+
+				// No route found: serve file
+				if( pathname == '/' && me.config.defaultPage )
+					pathname = me.config.defaultPage;
+				me.serveFile(pathname, req, response);
+			}
+			catch( err )
+			{
+				var mime = {"Content-Type": me.mimeType('html')};
+				console.log( 'App exception: %s', err);
+				response.writeHead(500);
+				response.write( '<html><body><h1>Application error</h1><pre>'+err+'</pre></body></html>' );
+				response.end();		
+			}
 		}
 
 		var listen_port = this.config.port || DEF_HTTP_PORT;
