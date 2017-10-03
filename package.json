@@ -1,13 +1,13 @@
 {
   "name": "minihttp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A mini and light http server for small projects",
   "main": "minihttp.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "formidable": "1.0.x"
+    "formidable": ">=1.0.x"
   },
   "repository": {
     "type": "git",

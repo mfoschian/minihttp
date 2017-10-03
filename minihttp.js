@@ -315,7 +315,14 @@ function HttpServer( args )
 			console.log( 'error parsing posted parms' );
 			callback( err );
 		});
-		form.parse(request);					
+		try
+		{
+			form.parse(request);
+		}
+		catch( e )
+		{
+			console.log( 'Form.parse exception: %s', util.inspect( e ) );
+		}
 	};
 
 	this.get_cookies = function(headers)

@@ -19,7 +19,25 @@ var Server = new minihttp.HttpServer( options );
 
 Server.route('/', function( request, response, parms )
 {
-	Server.sendResponse( response, Server );
+	Server.sendResponse( response, "Hello World!" );
+});
+
+Server.route('/upload',
+{
+	post: function( request, response, parms )
+	{
+		var file = parms.files[0];
+		if( file )
+		{
+			console.log( 'uploaded file %s', file.path );
+			Server.sendResponse( response, "Uploaded!" );
+		}
+		else
+		{
+			console.log( 'no file sent' );
+			Server.sendResponse( response, "no file sent!" );
+		}
+	}
 });
 
 Server.route('/crash', function( request, response, parms )
