@@ -4,7 +4,6 @@ var http = require("http");
 var url = require("url");
 var fs = require("fs");
 var fsPath = require("path");
-var sys = require('sys');
 var formidable = require('formidable');
 
 var DEF_HTTP_PORT = 80;
@@ -100,6 +99,22 @@ function HttpServer( args )
 			return false;
 	};
 
+	this.managePromise = function( P, response )
+	{
+		// Manage Promise results
+		if( P && typeof( P.then ) == 'function' )
+		{
+			var me = this;
+			P.then( function( data )
+			{
+				me.sendResponse( response, data );
+			},
+			function( err )
+			{
+				me.sendErrorResponse( response, err );
+			});
+		}
+	};
 
 	this.route = function( path, callback )
 	{
@@ -447,7 +462,6 @@ function HttpServer( args )
 					if( !callback )
 					{
 						// TODO: choose a better error management
-						// TODO: choose a better error management			
 						var mime = {"Content-Type": me.mimeType('html')};
 						console.log( 'ERROR : No routing defined');
 						response.writeHead(500);
@@ -460,13 +474,15 @@ function HttpServer( args )
 						me.parse_post_parms( request, function( err, fields, files )
 						{
 							var parms = { ids: route.ids, fields: fields, files: files };
-							callback(request, response, parms) ;
+							var P = callback(request, response, parms) ;
+							me.managePromise( P, response );
 						});
 					}
 					else
 					{
 						var parms = { ids: route.ids, fields: req.query };
-						callback(request, response, parms);
+						var P = callback(request, response, parms) ;
+						me.managePromise( P, response );
 					}
 					
 					return;
