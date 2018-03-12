@@ -1,6 +1,6 @@
 {
   "name": "minihttp",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A mini and light http server for small projects",
   "main": "minihttp.js",
   "scripts": {
