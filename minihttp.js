@@ -47,6 +47,15 @@ function merge(obj, ro)
 		obj[k] = ro[k];
 	}
 }
+
+function stringifyable(err) {
+	var plainObject = {};
+	Object.getOwnPropertyNames(err).forEach(function(key) {
+		plainObject[key] = err[key];
+	});
+	//return JSON.stringify(plainObject, filter, space);
+	return plainObject;
+}
 //----- UTILS }
 
 function HttpServer( args )
@@ -195,7 +204,14 @@ function HttpServer( args )
 	
 	this.JsonERR = function(err)
 	{
-		return JSON.stringify({ result: 'ERR', error: (err || '') });
+		var e = '';
+		if( typeof(err) == 'object' ) {
+			e = stringifyable(err);
+		}
+		else
+			e = err;
+
+		return JSON.stringify({ result: 'ERR', error: e });
 	};
 
 	this.sendJSON = function( res, json, headers )
