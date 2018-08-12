@@ -39,12 +39,20 @@ function dup(o)
 	return d;
 }
 
-function merge(obj, ro)
-{	
+function merge(obj, ro) {	
 	if( !obj || !ro ) return;
-	for( var k in ro )
-	{
-		obj[k] = ro[k];
+	if( typeof(ro) != 'object' ) return;
+	
+	var keys = Object.keys(ro);
+	for( var i=0; i<keys.length; i++ ) {
+		var k = keys[i];
+		var v = ro[k];
+		if( typeof(v) == 'object' ) {
+			var o = obj[k] || {};
+			merge( o, v );
+			v = o;
+		}
+		obj[k] = v;
 	}
 }
 
@@ -192,8 +200,18 @@ function HttpServer( args )
 	
 	this.mimeType =  function (s)
 	{
-		return this.config.mimeTypes[ s || '_default' ];
+		var m = this.config.mimeTypes[ s || '_default' ];
+		return m || this.config.mimeTypes[ '_default' ];
 	}
+
+	this.putMimeType = function( s, m ) {
+		if( typeof( s ) == 'object' ) {
+			merge( this.config.mimeTypes, s );
+		}
+		else if( typeof( s ) == 'string' ) {
+			this.config.mimeTypes[ s ] = m;
+		}
+	};
 
 	var me = this;
 

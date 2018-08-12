@@ -5,7 +5,7 @@ var options =
 {
 	webHome: '', // default 'public',
 	port: 8080,
-	mimeTypes: { vnc: 'text/plain' }
+	mimeTypes: { woff2: 'application/font-woff2' }
 };
 
 if( process.argv[2] )
@@ -17,11 +17,14 @@ if( process.argv[2] )
 
 var Server = new minihttp.HttpServer( options );
 
+Server.putMimeType( 'woff', 'application/font-woff' );
+Server.putMimeType( { woff3: 'application/font-woff3' } );
+
+console.log( util.inspect( Server.config.mimeTypes ) );
 
 Server.route('/', function( request, response, parms )
 {
-	Server.sendResponse( response, Server );
+	Server.sendResponse( response, parms );
 });
 
 Server.listen();
-

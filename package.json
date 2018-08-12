@@ -11,15 +11,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mfoschian/minihttp.git"
+    "url": "git+https://github.com/mfoschian/minihttp.git"
   },
   "keywords": [
     "http",
     "server"
   ],
   "author": "mfx",
-  "license": "BSD",
-  "readmeFilename": "README.md",
-  "gitHead": "7b4d041602368431532d0e9defebbaa88accc284",
-  "devDependencies": {}
+  "license": "BSD-2-Clause-FreeBSD",
+  "devDependencies": {},
+  "bugs": {
+    "url": "https://github.com/mfoschian/minihttp/issues"
+  },
+  "homepage": "https://github.com/mfoschian/minihttp#readme"
 }
