@@ -28,6 +28,55 @@ function generateUUID(){
 };
 
 
+function pad2(n)
+{
+	if( typeof(n) == 'number' )
+	{
+		if( n >= 0 && n < 10 )
+			return '0'+n;
+		else
+			return ''+n;
+	}
+	
+	if( typeof(n) == 'string' )
+	{
+		if( n.length == 1 )
+			return '0'+n;
+		if( n.length > 1 )
+			return n.substr(0,2);
+	}
+	
+	return '00';
+}
+
+function formatDate( dt )
+{
+	var d = dt || new Date();
+	return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+}
+
+function formatTime( dt )
+{
+	var d = dt || new Date();
+	return pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds());
+}
+
+function formatDateTime( dt )
+{
+	var d = dt || new Date();
+	return formatDate(d) + ' ' + formatTime(d);
+}
+
+function formatDateTimeMs( dt ) {
+	var d = dt || new Date();
+	var ms = d.getMilliseconds();
+	if( ms < 10 )
+		ms = '00' + ms;
+	else if( ms < 100 ) {
+		ms = '0' + ms;
+	}
+	return formatDate(d) + ' ' + formatTime(d) + '.' + ms;
+}
 
 function dup(o)
 {
@@ -476,6 +525,10 @@ function HttpServer( args )
 				var pathname = req.pathname;
 				var method = request.method.toLowerCase();
 				
+				if( me.config.accesslog == true ) {
+					// time / ip / port / method / url
+					console.log( "*** %s - %s - %s - %s - %s", formatDateTimeMs(new Date()), request.socket.remoteAddress, request.socket.remotePort, method, pathname  );
+				}
 				if( me.config.debug > 0 ) console.log(method + " " + pathname);
 				//console.log(req);
 
